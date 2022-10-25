@@ -1,11 +1,11 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './dto/auth.dto';
-import * as bcrypt from 'bcrypt';
 import { JwtPayload, Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import * as argon from 'argon2';
+import { ROLES } from './types/roles.types';
 
 @Injectable()
 export class AuthService {
@@ -14,11 +14,15 @@ export class AuthService {
   async signupLocal(dto: AuthDto): Promise<Tokens> {
     const hash = await argon.hash(dto.password);
 
+    const count = await this.prisma.user.count();
+
     const user = await this.prisma.user
       .create({
         data: {
           email: dto.email,
           hash,
+          role: count == 0 ? ROLES.ADMIN : ROLES.USER,
+          iQuci: count == 0 ? 1000 : 0,
         },
       })
       .catch((error) => {
@@ -42,6 +46,7 @@ export class AuthService {
         email: dto.email,
       },
     });
+    console.log(user.role);
 
     if (!user) throw new ForbiddenException('Access Denied');
 
