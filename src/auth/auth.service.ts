@@ -21,7 +21,7 @@ export class AuthService {
         data: {
           email: dto.email,
           hash,
-          role: count == 0 ? ROLES.ADMIN : ROLES.USER,
+          role: count == 0 ? 'ADMIN' : 'USER',
           iQuci: count == 0 ? 1000 : 0,
         },
       })
@@ -34,7 +34,7 @@ export class AuthService {
         throw error;
       });
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.email, user.role);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
@@ -53,7 +53,7 @@ export class AuthService {
     const passwordMatches = await argon.verify(user.hash, dto.password);
     if (!passwordMatches) throw new ForbiddenException('Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.email, user.role);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
@@ -85,7 +85,7 @@ export class AuthService {
     const rtMatches = await argon.verify(user.hashRt, rt);
     if (!rtMatches) throw new ForbiddenException('Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.email, user.role);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
@@ -103,10 +103,11 @@ export class AuthService {
     });
   }
 
-  async getTokens(userId: number, email: string): Promise<Tokens> {
+  async getTokens(userId: number, email: string, role: ROLES): Promise<Tokens> {
     const jwtPayload: JwtPayload = {
       sub: userId,
       email: email,
+      role,
     };
 
     const [at, rt] = await Promise.all([
@@ -124,5 +125,9 @@ export class AuthService {
       access_token: at,
       refresh_token: rt,
     };
+  }
+
+  isAdmin(permissions: string): boolean {
+    return permissions.includes('ADMIN');
   }
 }
