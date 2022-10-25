@@ -12,14 +12,16 @@ datasource db {
 
 model User {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  name      String
   role      Role     @default(USER)
 
   email String @unique
   iQuci Int @default(0)  
   hash String
   hashRt String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("users")
 }
