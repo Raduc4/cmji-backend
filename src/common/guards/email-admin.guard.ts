@@ -11,7 +11,7 @@ import { AuthService } from 'src/auth/auth.service';
 // Check if username in field for query matches authenticated user's username
 // or if the user is admin
 @Injectable()
-export class UsernameEmailAdminGuard implements CanActivate {
+export class EmailAdminGuard implements CanActivate {
   constructor(
     private authService: AuthService,
     private readonly reflector: Reflector,
@@ -40,12 +40,10 @@ export class UsernameEmailAdminGuard implements CanActivate {
     let shouldActivate = false;
     if (request.user) {
       const user = <User>request.user;
-      const args = <{ email: string; username: String }>(
-        (<unknown>context.getArgs())
-      );
+      const args = <{ email: string }>(<unknown>context.getArgs());
       if (args.email && typeof args.email === 'string') {
         shouldActivate = args.email.toLowerCase() === user.email.toLowerCase();
-      } else if (!args.username && !args.email) {
+      } else if (!args.email) {
         shouldActivate = true;
       }
 

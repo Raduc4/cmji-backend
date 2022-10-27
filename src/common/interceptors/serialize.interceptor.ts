@@ -20,6 +20,7 @@ export class OneSerializeInterceptor implements NestInterceptor {
   ): Observable<UserReturned> {
     return handler.handle().pipe(
       map((data: User) => {
+        console.log('data', data);
         const { id, name, role, email, iQuci } = data;
 
         return {

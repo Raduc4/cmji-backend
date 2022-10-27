@@ -53,7 +53,6 @@ export class AuthService {
         email: dto.email,
       },
     });
-    console.log(user.role);
 
     if (!user) throw new ForbiddenException('Access Denied');
 
