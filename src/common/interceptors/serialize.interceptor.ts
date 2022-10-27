@@ -2,16 +2,7 @@ import { NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-// import { plainToClass } from 'class-transformer';
 import { User, UserReturned } from 'src/user/types/user.types';
-
-// interface ClassConstructor {
-//   new (...args: any[]): {};
-// }
-
-// export function Serialize(dto: ClassConstructor) {
-//   return UseInterceptors(new SerializeInterceptor(dto));
-// }
 
 export class OneSerializeInterceptor implements NestInterceptor {
   intercept(
@@ -20,7 +11,6 @@ export class OneSerializeInterceptor implements NestInterceptor {
   ): Observable<UserReturned> {
     return handler.handle().pipe(
       map((data: User) => {
-        console.log('data', data);
         const { id, name, role, email, iQuci } = data;
 
         return {

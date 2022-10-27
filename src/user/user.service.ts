@@ -1,10 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User, UserReturned } from './types/user.types';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  private configCode;
+  constructor(private prisma: PrismaService, config: ConfigService) {
+    this.configCode = config.get<number>('ADMIN_CODE');
+  }
+
+  async decreaseUser(code: number, email: string) {
+    if (Number(code) !== Number(this.configCode)) {
+      throw new UnauthorizedException('You are not authorized to do this');
+    }
+
+    await this.prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        role: 'USER',
+      },
+    });
+    return true;
+  }
+  async increaseAdmin(code: number, email: string) {
+    if (Number(this.configCode) !== Number(code)) {
+      throw new UnauthorizedException('You are not authorized to do this');
+    }
+    await this.prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        role: 'ADMIN',
+      },
+    });
+    return true;
+  }
 
   async get_profile(userId: number) {
     const user = await this.prisma.user.findUnique({

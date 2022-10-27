@@ -20,8 +20,7 @@ export class AtGuard extends AuthGuard('jwt') {
   }
 
   handleRequest(err, user, info, context, status) {
-    console.log('handleReq');
-    console.log({ err, user, info, context, status });
+    console.log(err, user, info, context, status);
     return super.handleRequest(err, user, info, context, status);
   }
 }

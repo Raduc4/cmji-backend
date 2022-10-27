@@ -17,6 +17,7 @@ model User {
 
   email String @unique
   iQuci Int @default(0)  
+  products Product[]
   hash String
   hashRt String?
 
@@ -31,10 +32,13 @@ enum Role {
   ADMIN
 }
 
-model product {
+model Product {
   id      Int  @id @default(autoincrement())
   title   String
   price   Int
+  qty     Int   @default(1)
+  author  User @relation(fields: [authorId], references: [id])
+  authorId Int 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
