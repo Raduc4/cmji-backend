@@ -18,6 +18,7 @@ model User {
   email String @unique
   iQuci Int @default(0)  
   products Product[]
+  orders Order[]
   hash String
   hashRt String?
 
@@ -44,4 +45,15 @@ model Product {
   updatedAt DateTime @updatedAt
 
   @@map("products")
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+  qty Int @default(1)
+  bought_by User @relation(fields: [userId], references: [id])
+  userId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("orders")
 }
